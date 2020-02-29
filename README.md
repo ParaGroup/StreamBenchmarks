@@ -2,7 +2,7 @@
 
 # StreamBenchmarks
 
-This repository includes a set of seven streaming applications taken from the literature, and from existing repositories, which have been cleaned up properly. All the applications can be run in an homogeneous manner and executions collect statistics of throughput and latency in different ways. The applications are:
+This repository includes a set of seven streaming applications taken from the literature, and from existing repositories, which have been cleaned up properly. All the applications can be run in a homogeneous manner and executions collect statistics of throughput and latency in different ways. The applications are:
 * <strong>FraudDetection</strong> (FD) -> applies a Markov model to calculate the probability of a credit card transaction being a fraud
 * <strong>SpikeDetection</strong> (SD) -> finds out the spikes in a stream of sensor readings using a moving-average operator of 1,000 events and a filter based on a fixed threshold
 * <strong>TrafficMonitoring</strong> (TM) -> processes a stream of events emitted from taxis in the city of Beijing. An operator is responsible for identifying the road that vehicle is riding and another operator updates the average speed of vehicles for each road
@@ -15,7 +15,7 @@ The seven applications are available in four different Stream Processing Systems
 * <strong>Apache Storm</strong>
 * <strong>Apache Flink</strong>
 * <strong>BriskStream</strong> ([link](https://github.com/Xtra-Computing/briskstream))
-* <strong>WindFlow</strong> ([link](https://github.com/ParaGroup/WindFlow)
+* <strong>WindFlow</strong> ([link](https://github.com/ParaGroup/WindFlow))
 
 Dataset files are quite large. For same applications, the scripts to generate them have been provided in this repository. For the other applications, send an email to the contributors of this repository.
 
