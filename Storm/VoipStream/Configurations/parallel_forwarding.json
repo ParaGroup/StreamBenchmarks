@@ -1,0 +1,23 @@
+{
+    "run_time": 60,
+    "sampling_rate": 100,
+    "gen_rate": 0,
+    "chaining": false,
+    "aggressive_chaining": false,
+    "dataset": "../../Datasets/VS/voip_stream.txt",
+    "variant": "forwarding",
+    "source": 1,
+    "parser": 1,
+    "dispatcher": 3,
+    "ct24": 1,
+    "ecr24": 1,
+    "acd": 3,
+    "pre_rcr": 1,
+    "rcr": 1,
+    "fofir": 3,
+    "ecr": 1,
+    "encr": 1,
+    "url": 3,
+    "score": 3,
+    "sink": 1
+}
