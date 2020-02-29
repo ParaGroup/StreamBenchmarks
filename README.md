@@ -11,13 +11,14 @@ This repository includes a set of seven streaming applications taken from the li
 * <strong>LinearRoad</strong> (LR) -> emulates a tolling system for the vehicle expressways. The system uses a variable tolling technique accounting for traffic congestion and accident proximity to calculate toll charges
 * <strong>VoipStream</strong> (VS) -> it has been used in the evaluation of Blockmon. It detects telemarketing users by analyzing call detail records using a set of Bloom filters
 
-The seven applications are available in four different Stream Processing Systems (SPSs):
+The seven applications are available in three different Stream Processing Systems (SPSs):
 * <strong>Apache Storm</strong>
 * <strong>Apache Flink</strong>
-* <strong>BriskStream</strong> ([link](https://github.com/Xtra-Computing/briskstream))
 * <strong>WindFlow</strong> ([link](https://github.com/ParaGroup/WindFlow))
 
-Dataset files are quite large. For same applications, the scripts to generate them have been provided in this repository. For the other applications, send an email to the contributors of this repository.
+The same applications (except YSB) have been also provided in <strong>BriskStream</strong>, a research SPS for multicores. They can be found [link](https://github.com/Xtra-Computing/briskstream). If you need to test YSB in BriskStream, send an email to me.
+
+Dataset files are quite large. For same applications, the scripts to generate them have been provided in this repository. For the other applications, send an email to me.
 
 # Contributors
 The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it).
