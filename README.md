@@ -1,7 +1,6 @@
 [![HitCount](http://hits.dwyl.io/paragroup/streambenchmarks.svg)](https://github.com/ParaGroup/StreamBenchmarks)
 
 # StreamBenchmarks
-Suite of Benchmarks Applications for Stream Processing Systems
 
 This repository includes a set of seven streaming applications taken from the literature and from existing repositories and cleaned up properly. All the applications can be run in an homogeneous manner and executions collect statistics of throughput and latency in different ways. The applications are:
 * <strong>FraudDetection</strong> (FD) -> applies a Markov model to calculate the probability of a credit card transaction being a fraud
