@@ -16,7 +16,7 @@ The seven applications are available in three different Stream Processing System
 * <strong>Apache Flink</strong>
 * <strong>WindFlow</strong> ([link](https://github.com/ParaGroup/WindFlow))
 
-The same applications (except YSB) have also been provided in <strong>BriskStream</strong>, a research SPS for multicores. They can be found [here](https://github.com/Xtra-Computing/briskstream). If you need to test YSB in BriskStream, send an email to me.
+The same applications (except YSB) have also been provided in <strong>BriskStream</strong>, a research SPS for multicores. They can be found [here](https://github.com/Xtra-Computing/briskstream). If you need to test YSB in BriskStream, send an email to me, and I will share the source code with you.
 
 Dataset files are quite large. For same applications, the scripts to generate them have been provided in this repository. For the other applications, send an email to me.
 
