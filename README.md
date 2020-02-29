@@ -1,3 +1,5 @@
+[![HitCount](http://hits.dwyl.io/paragroup/streambenchmarks.svg)](https://github.com/ParaGroup/StreamBenchmarks)
+
 # StreamBenchmarks
 Suite of Benchmarks Applications for Stream Processing Systems
 
