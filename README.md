@@ -21,4 +21,4 @@ The same applications (except YSB) have also been provided in <strong>BriskStrea
 Dataset files are quite large. For same applications, the scripts to generate them have been provided in this repository. For the other applications, send an email to me.
 
 # Contributors
-The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it). Other authors of the source code are two former Master Student in my group, Alessandra Fais and Andrea Cardaci.
+The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it). Other authors of the source code are two former Master students in my group: Alessandra Fais and Andrea Cardaci.
