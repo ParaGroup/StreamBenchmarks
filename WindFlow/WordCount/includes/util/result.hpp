@@ -35,7 +35,7 @@ struct result_t {
     }
 
     // setControlFields method
-    void setControlFields(string& _key, uint64_t _id, uint64_t _ts) {
+    void setControlFields(string _key, uint64_t _id, uint64_t _ts) {
         key = _key;
         id = _id;
         ts = _ts;
