@@ -11,7 +11,7 @@ DEPENDENCIES := $(SOURCES:.cpp=.d)
 
 # WindFlow and FastFlow dependencies
 WINDFLOW_ROOT ?= $(HOME)/WindFlow
-FASTFLOW_ROOT ?= $(HOME)/fastflow_new
+FASTFLOW_ROOT ?= $(HOME)/fastflow
 CXXFLAGS      += -isystem $(WINDFLOW_ROOT)/wf/ -isystem $(FASTFLOW_ROOT)
 
 # FastFlow queue setup (XXX same as Storm TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE)
