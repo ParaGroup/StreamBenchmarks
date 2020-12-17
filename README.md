@@ -21,5 +21,10 @@ The same applications (except YSB) have also been provided in <strong>BriskStrea
 
 Dataset files are quite large. For some applications, the scripts to generate them have been provided in this repository. For the other applications, send me an email.
 
+# Reference
+StreamBenchmark uses the applications that we have recently added to a larger benchmark suite of streaming applications called <tt>DSPBench</tt> available on GitHub at the following [link](https://github.com/GMAP/DSPBench). If our applications revealed useful for your research, we kindly ask you to give credit to our effort by citing the following paper:
+
+Bordin, M. V.; Griebler, D.; Mencagli, G.; F. R. Geyer, C. F. R; Fernandes, L. G. DSPBench: a Suite of Benchmark Applications for Distributed Data Stream Processing Systems. IEEE Access, 2020. [Link](https://ieeexplore.ieee.org/document/9290133)
+
 # Contributors
 The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it). Other authors of the source code are two former Master students in my group: Alessandra Fais and Andrea Cardaci.
