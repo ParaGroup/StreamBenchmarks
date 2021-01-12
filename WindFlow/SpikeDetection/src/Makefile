@@ -31,7 +31,7 @@ sd: metric.o metric_group.o sampler.o sd.o folder
 	$(CXX) metric.o metric_group.o sampler.o sd.o -o ../bin/sd $(LDFLAGS)
 
 folder:
-        mkdir -p ../bin
+	mkdir -p ../bin
 
 clean:
 	rm -f $(OUT_DIR)/*

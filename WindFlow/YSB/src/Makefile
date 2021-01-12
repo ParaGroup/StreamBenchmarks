@@ -31,7 +31,7 @@ ysb: metric.o metric_group.o sampler.o ysb.o folder
 	$(CXX) metric.o metric_group.o sampler.o ysb.o -o ../bin/ysb $(LDFLAGS)
 
 folder:
-        mkdir -p ../bin
+	mkdir -p ../bin
 
 clean:
 	rm -f $(OUT_DIR)/*

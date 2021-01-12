@@ -31,7 +31,7 @@ wc: metric.o metric_group.o sampler.o wc.o folder
 	$(CXX) metric.o metric_group.o sampler.o wc.o -o ../bin/wc $(LDFLAGS)
 
 folder:
-        mkdir -p ../bin
+	mkdir -p ../bin
 
 clean:
 	rm -f $(OUT_DIR)/*
