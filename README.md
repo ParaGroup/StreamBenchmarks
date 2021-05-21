@@ -25,8 +25,17 @@ Dataset files are quite large. For some applications, the scripts to generate th
 
 # Reference
 This repository uses the applications that we have recently added to a larger benchmark suite of streaming applications called <tt>DSPBench</tt> available on GitHub at the following [link](https://github.com/GMAP/DSPBench). If our applications revealed useful for your research, we kindly ask you to give credit to our effort by citing the following paper:
-
-Bordin, M. V.; Griebler, D.; Mencagli, G.; F. R. Geyer, C. F. R; Fernandes, L. G. <b>DSPBench: a Suite of Benchmark Applications for Distributed Data Stream Processing Systems</b>. IEEE Access, 2020. [Link](https://ieeexplore.ieee.org/document/9290133)
+```
+@article{DSPBench,
+ author={Bordin, Maycon Viana and Griebler, Dalvan and Mencagli, Gabriele and Geyer, Cláudio F. R. and Fernandes, Luiz Gustavo L.},
+ journal={IEEE Access}, 
+ title={DSPBench: A Suite of Benchmark Applications for Distributed Data Stream Processing Systems}, 
+ year={2020},
+ volume={8},
+ number={},
+ pages={222900-222917},
+ doi={10.1109/ACCESS.2020.3043948}
+}
 
 # Contributors
-The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it). Other authors of the source code are two former Master students in my group: Alessandra Fais and Andrea Cardaci.
+The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it). Other authors of the source code are Alessandra Fais and Andrea Cardaci.
