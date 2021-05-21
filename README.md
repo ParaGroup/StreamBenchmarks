@@ -36,6 +36,7 @@ This repository uses the applications that we have recently added to a larger be
  pages={222900-222917},
  doi={10.1109/ACCESS.2020.3043948}
 }
+```
 
 # Contributors
 The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it). Other authors of the source code are Alessandra Fais and Andrea Cardaci.
