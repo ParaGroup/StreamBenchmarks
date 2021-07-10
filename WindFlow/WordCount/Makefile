@@ -1,11 +1,14 @@
 # Author: Gabriele Mencagli
 # Date: 11/01/2020
 
-all:
+all: bin
 	$(MAKE) -C src
 
 clean:
-	$(MAKE) clean -C src
+	$(RM) -r bin && $(MAKE) clean -C src
+
+bin:
+	@mkdir -p bin
 
 .DEFAULT_GOAL := all
 .PHONY: all clean
