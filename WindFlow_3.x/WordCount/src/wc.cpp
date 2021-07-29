@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
                 .withOutputBatchSize(batch_size)
                 .build();
         Counter_Functor counter_functor(app_start_time);
-        Accumulator counter = Accumulator_Builder(counter_functor)
+        Reduce counter = Reduce_Builder(counter_functor)
                 .withParallelism(counter_par_deg)
                 .withName(counter_name)
                 .withKeyBy([](const result_t &r) -> std::string { return r.key; })
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
                 .withOutputBatchSize(batch_size)
                 .build();
         Counter_Functor counter_functor(app_start_time);
-        Accumulator counter = Accumulator_Builder(counter_functor)
+        Reduce counter = Reduce_Builder(counter_functor)
                 .withParallelism(counter_par_deg)
                 .withName(counter_name)
                 .withKeyBy([](const result_t &r) -> std::string { return r.key; })
