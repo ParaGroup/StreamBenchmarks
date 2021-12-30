@@ -122,10 +122,10 @@ public:
         //print_tuple("[AverageCalculator] sent tuple: ", t);
 
         // save the received keys (test keyed distribution)
-        if (keys.find(t.key) == keys.end())
-            keys.insert(make_pair(t.key, t.id));
-        else
-            (keys.find(t.key))->second = t.id;
+        // if (keys.find(t.key) == keys.end())
+        //     keys.insert(make_pair(t.key, t.id));
+        // else
+        //     (keys.find(t.key))->second = t.id;
 
         current_time = current_time_nsecs();
     }

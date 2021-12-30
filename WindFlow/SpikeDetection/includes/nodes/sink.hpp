@@ -69,9 +69,15 @@ public:
             // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
             unsigned long tuple_latency = (current_time_nsecs() - (app_start_time + (*r).ts)) / 1e03;    // latency (usecs)
             processed++;        // tuples counter
+
+
             current_time = current_time_nsecs();
             latency_sampler.add(tuple_latency, current_time);
-
+#if 0
+            cout << "Ricevuto outlier entity_id: " << (*r).key << " property_value " << (*r).property_value << " incremental_average " << (*r).incremental_average << endl;
+            if (processed > 100)
+                abort();
+#endif       
         }
         else {     // EOS
             /*cout << "[Sink] replica " << replica_id + 1 << "/" << parallelism

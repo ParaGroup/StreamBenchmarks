@@ -68,14 +68,23 @@ void map_and_parse_dataset(const string& file_path, const string& split_regex) {
  *  The created tuples are maintained in memory. The source node will generate the stream by
  *  reading all the tuples from main memory.
  */ 
-void create_tuples() {
+void create_tuples(int num_keys)
+{
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0, num_keys-1);
+    mt19937 rng;
+    rng.seed(0);
     for (int next_tuple_idx = 0; next_tuple_idx < parsed_file.size(); next_tuple_idx++) {
         // create tuple
         auto tuple_content = parsed_file.at(next_tuple_idx);
         tuple_t t;
         t.entity_id = tuple_content.first;
         t.record = tuple_content.second;
-        t.key = (entity_key_map.find(t.entity_id)->second).first;
+        if (num_keys == 0) {
+            t.key = (entity_key_map.find(t.entity_id)->second).first;
+        }
+        else {
+            t.key = dist(rng);
+        }
         //t.id = ((entity_key_map.find(t.entity_id))->second).second++;
         dataset.insert(dataset.end(), t);
     }
@@ -95,8 +104,9 @@ int main(int argc, char* argv[]) {
     long sampling = 0;
     bool chaining = false;
     size_t batch_size = 0;
-    if (argc == 9 || argc == 10) {
-        while ((option = getopt_long(argc, argv, "r:s:p:b:c:", long_opts, &index)) != -1) {
+    size_t num_keys = 0;
+    if (argc == 11 || argc == 12) {
+        while ((option = getopt_long(argc, argv, "r:k:s:p:b:c:", long_opts, &index)) != -1) {
             file_path = _input_file;
             switch (option) {
                 case 'r': {
@@ -109,6 +119,10 @@ int main(int argc, char* argv[]) {
                 }
                 case 'b': {
                     batch_size = atoi(optarg);
+                    break;
+                }
+                case 'k': {
+                    num_keys = atoi(optarg);
                     break;
                 }
                 case 'p': {
@@ -146,7 +160,7 @@ int main(int argc, char* argv[]) {
         while ((option = getopt_long(argc, argv, "h", long_opts, &index)) != -1) {
             switch (option) {
                 case 'h': {
-                    printf("Parameters: --rate <value> --sampling <value> --batch <size> --parallelism <nSource,nPredictor,nSink> [--chaining]\n");
+                    printf("Parameters: --rate <value> --keys <value> --sampling <value> --batch <size> --parallelism <nSource,nPredictor,nSink> [--chaining]\n");
                     exit(EXIT_SUCCESS);
                 }
             }
@@ -158,7 +172,7 @@ int main(int argc, char* argv[]) {
     }
     /// data pre-processing
     map_and_parse_dataset(file_path, ",");
-    create_tuples();
+    create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
     cout << "Executing FraudDetection with parameters:" << endl;

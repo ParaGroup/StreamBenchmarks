@@ -10,7 +10,7 @@ BINARIES     := $(patsubst %.cpp, %, $(wildcard bin/*.cpp))
 DEPENDENCIES := $(SOURCES:.cpp=.d)
 
 # WindFlow and FastFlow dependencies
-WINDFLOW_ROOT ?= $(HOME)/WindFlow-3.0.0
+WINDFLOW_ROOT ?= $(HOME)/WindFlow
 FASTFLOW_ROOT ?= $(HOME)/fastflow
 CXXFLAGS      += -isystem $(WINDFLOW_ROOT)/wf/ -isystem $(FASTFLOW_ROOT)
 

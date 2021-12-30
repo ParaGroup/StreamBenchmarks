@@ -92,24 +92,36 @@ void parse_dataset(const string& file_path) {
  *  The created tuples are maintained in memory. The source node will generate the stream by
  *  reading all the tuples from main memory.
  */ 
-void create_tuples() {
+void create_tuples(int num_keys)
+{
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0, num_keys-1);
+    mt19937 rng;
+    rng.seed(0);
     for (int next_tuple_idx = 0; next_tuple_idx < parsed_file.size(); next_tuple_idx++) {
         // create tuple
         auto record = parsed_file.at(next_tuple_idx);
         tuple_t t;
         // select the value of the field the user chose to monitor (parameter set in constants.hpp)
-        if (_field == TEMPERATURE)
+        if (_field == TEMPERATURE) {
             t.property_value = get<TEMP_FIELD>(record);
-        else if (_field == HUMIDITY)
+        }
+        else if (_field == HUMIDITY) {
             t.property_value = get<HUMID_FIELD>(record);
-        else if (_field == LIGHT)
+        }
+        else if (_field == LIGHT) {
             t.property_value = get<LIGHT_FIELD>(record);
-        else if (_field == VOLTAGE)
+        }
+        else if (_field == VOLTAGE) {
             t.property_value = get<VOLT_FIELD>(record);
+        }
         t.incremental_average = 0;
-        t.key = get<DEVICE_ID_FIELD>(record);
-        //t.id = (key_occ.find(get<DEVICE_ID_FIELD>(record)))->second++;
-        //t.ts = 0L;
+        if (num_keys > 0) {
+            t.key = dist(rng);
+        }
+        else {
+            t.key = get<DEVICE_ID_FIELD>(record);
+        }
+        t.ts = 0L;
         dataset.insert(dataset.end(), t);
     }
 }
@@ -129,12 +141,17 @@ int main(int argc, char* argv[]) {
     long sampling = 0;
     bool chaining = false;
     size_t batch_size = 0;
-    if (argc == 9 || argc == 10) {
-        while ((option = getopt_long(argc, argv, "r:s:p:b:c:", long_opts, &index)) != -1) {
+    int num_keys = 0;
+    if (argc == 11 || argc == 12) {
+        while ((option = getopt_long(argc, argv, "r:k:s:p:b:c:", long_opts, &index)) != -1) {
             file_path = _input_file;
             switch (option) {
                 case 'r': {
                     rate = atoi(optarg);
+                    break;
+                }
+                case 'k': {
+                    num_keys = atoi(optarg);
                     break;
                 }
                 case 's': {
@@ -181,7 +198,7 @@ int main(int argc, char* argv[]) {
         while ((option = getopt_long(argc, argv, "h", long_opts, &index)) != -1) {
             switch (option) {
                 case 'h': {
-                    printf("Parameters: --rate <value> --sampling <value> --batch <size> --parallelism <nSource,nMoving-Average,nSpike-Detector,nSink> [--chaining]\n");
+                    printf("Parameters: --rate <value> --keys <value> --sampling <value> --batch <size> --parallelism <nSource,nMoving-Average,nSpike-Detector,nSink> [--chaining]\n");
                     exit(EXIT_SUCCESS);
                 }
             }
@@ -193,7 +210,7 @@ int main(int argc, char* argv[]) {
     }
     /// data pre-processing
     parse_dataset(file_path);
-    create_tuples();
+    create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
     cout << "Executing SpikeDetection with parameters:" << endl;
@@ -201,7 +218,7 @@ int main(int argc, char* argv[]) {
         cout << "  * rate: " << rate << " tuples/second" << endl;
     }
     else {
-        cout << "  * rate: full_speed tupes/second" << endl;
+        cout << "  * rate: full_speed tuples/second" << endl;
     }
     cout << "  * batch size: " << batch_size << endl;
     cout << "  * sampling: " << sampling << endl;
@@ -210,10 +227,10 @@ int main(int argc, char* argv[]) {
     cout << "  * spike-detector: " << detector_par_deg << endl;
     cout << "  * sink: " << sink_par_deg << endl;
     cout << "  * topology: source -> moving-average -> spike-detector -> sink" << endl;
-    PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::INGRESS_TIME);
+    PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
     if (!chaining) { // no chaining
         /// create the operators
-        Source_Functor source_functor(dataset, rate, app_start_time);
+        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
         Source source = Source_Builder(source_functor)
                 .withParallelism(source_par_deg)
                 .withName(source_name)
@@ -245,7 +262,7 @@ int main(int argc, char* argv[]) {
     }
     else { // chaining
         /// create the operators
-        Source_Functor source_functor(dataset, rate, app_start_time);
+        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
         Source source = Source_Builder(source_functor)
                 .withParallelism(source_par_deg)
                 .withName(source_name)

@@ -93,8 +93,9 @@ public:
             sent_tuples.fetch_add(generated_tuples);
             return false;
         }
-        else
+        else {
             return true;
+        }
     }
 
     ~Source_Functor() {}

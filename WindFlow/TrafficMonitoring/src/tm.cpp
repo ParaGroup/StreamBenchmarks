@@ -3,7 +3,7 @@
  *  @author  Gabriele Mencagli
  *  @date    13/01/2020
  *  
- *  @brief Main of the SpikeDetection application
+ *  @brief Main of the TrafficMonitoring application
  */ 
 
 #include <regex>

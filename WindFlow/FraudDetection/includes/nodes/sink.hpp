@@ -70,6 +70,11 @@ public:
             processed++;        // tuples counter
             current_time = current_time_nsecs();
             latency_sampler.add(tuple_latency, current_time);
+#if 0
+            cout << "Ricevuto fraud entity_id: " << (*r).entity_id << " score " << (*r).score << endl;
+            if (processed > 100)
+                abort();
+#endif
         }
         else {     // EOS
             /*cout << "[Sink] replica " << replica_id + 1 << "/" << parallelism

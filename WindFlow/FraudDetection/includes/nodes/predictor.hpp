@@ -71,8 +71,8 @@ public:
             r->entity_id = t.entity_id;
             r->score = prediction_object.get_score();
             //r->states = prediction_object.get_states();
-            //r->key = t.key;
-            //r->id = t.id;
+            r->key = t.key;
+            r->id = t.id;
             r->ts = t.ts;
             shipper.push(r);
             outliers++;

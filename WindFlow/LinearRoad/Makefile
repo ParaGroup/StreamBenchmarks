@@ -19,10 +19,10 @@ CXXFLAGS += -DFF_BOUNDED_BUFFER -DDEFAULT_BUFFER_CAPACITY=32786 -DNDEBUG
 
 # build configurations
 release debug profile perf: all
-release: CXXFLAGS += -O3 -Os
-debug:   CXXFLAGS += -ggdb3 -Werror -DDEBUG
-profile: CXXFLAGS += -O3 -ggdb3 -DTRACE_WINDFLOW
-perf:    CXXFLAGS += -O3 -ggdb3
+release: CXXFLAGS += -O3 -g
+debug:   CXXFLAGS += -O3 -g -Werror -DDEBUG
+profile: CXXFLAGS += -O3 -g -DTRACE_WINDFLOW
+perf:    CXXFLAGS += -O3 -g
 
 # build all binaries
 all: $(BINARIES)

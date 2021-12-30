@@ -26,6 +26,12 @@
 #include <windflow.hpp>
 #include <atomic>
 
+int num_nodes;
+int num_combs;
+int num_pipes;
+int num_a2as;
+int num_containers;
+
 // global variable for throughput
 std::atomic<unsigned long> sent_tuples;
 

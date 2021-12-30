@@ -73,7 +73,7 @@ public:
             generations(0),
             generated_tuples(0)
     {
-        dataset = _dataset;
+        dataset = _dataset; // be careful, here there is a copy. Maybe it would be better to copy only the pointer or to use move semantics...
         interval = 1000000L; // 1 second (microseconds)
     }
 

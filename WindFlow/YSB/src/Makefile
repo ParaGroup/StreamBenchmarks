@@ -13,7 +13,7 @@ MACRO           = -DFF_BOUNDED_BUFFER -DDEFAULT_BUFFER_CAPACITY=32786 -DNDEBUG -
 OPTFLAGS		= -g -O3 -finline-functions
 LDFLAGS			= -pthread
 
-all: ysb
+all: yb
 
 metric.o: ../includes/util/metric.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
@@ -24,18 +24,15 @@ metric_group.o: ../includes/util/metric_group.cpp
 sampler.o: ../includes/util/sampler.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-ysb.o: ysb.cpp
+yb.o: yb.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-ysb: metric.o metric_group.o sampler.o ysb.o folder
-	$(CXX) metric.o metric_group.o sampler.o ysb.o -o ../bin/ysb $(LDFLAGS)
-
-folder:
-	mkdir -p ../bin
+yb: metric.o metric_group.o sampler.o yb.o
+	$(CXX) metric.o metric_group.o sampler.o yb.o -o ../bin/yb $(LDFLAGS)
 
 clean:
-	rm -f $(OUT_DIR)/*
+	rm -f $(OUT_DIR)/yb
 	rm -f *.o
 
 .DEFAULT_GOAL := all
-.PHONY: all clean folder
+.PHONY: all clean

@@ -30,6 +30,7 @@ const struct option long_opts[] = {
         {"sampling", REQUIRED, 0, 's'},   // predictor parallelism degree
         {"parallelism", REQUIRED, 0, 'p'},        // pipe end (sink) parallelism degree
         {"batch", REQUIRED, 0, 'b'},        // source and predictor batch size
+        {"keys", REQUIRED, 0, 'k'},        // number of keys
         {"chaining", NONE, 0, 'c'},
         {0, 0, 0, 0}
 };

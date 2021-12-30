@@ -69,6 +69,11 @@ public:
             words++;        // tuples counter
             current_time = current_time_nsecs();
             latency_sampler.add(tuple_latency, current_time);
+#if 0
+            cout << "Ricevuta parola: " << (*r).key << " count " << (*r).id << endl;
+            if (words > 100)
+                abort();
+#endif
         }
         else {     // EOS
             if (words != 0) {

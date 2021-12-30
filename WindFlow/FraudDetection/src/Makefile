@@ -27,15 +27,12 @@ sampler.o: ../includes/util/sampler.cpp
 fd.o: fd.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-fd: metric.o metric_group.o sampler.o fd.o folder
+fd: metric.o metric_group.o sampler.o fd.o
 	$(CXX) metric.o metric_group.o sampler.o fd.o -o ../bin/fd $(LDFLAGS)
 
-folder:
-	mkdir -p ../bin
-
 clean:
-	rm -f $(OUT_DIR)/*
+	rm -f $(OUT_DIR)/fd
 	rm -f *.o
 
 .DEFAULT_GOAL := all
-.PHONY: all clean folder
+.PHONY: all clean

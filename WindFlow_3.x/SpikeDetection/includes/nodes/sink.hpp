@@ -75,7 +75,7 @@ public:
             latency_sampler.add(tuple_latency, current_time);
 #if 0
             if (processed < 100) {
-            	cout << "Ricevuto outlier entity_id: " << (*r).key << " property_value " << (*r).property_value << " incremental_average " << (*r).incremental_average << endl;
+                cout << "Ricevuto outlier entity_id: " << (*r).key << " property_value " << (*r).property_value << " incremental_average " << (*r).incremental_average << endl;
             }
 #endif       
         }

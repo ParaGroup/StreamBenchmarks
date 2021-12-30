@@ -6,10 +6,10 @@ public interface YSBConstants extends BaseConstants {
     String DEFAULT_TOPO_NAME = "YSB";
 
     interface Conf {
-        String RUNTIME = "ysb.runtime_sec";
-        String BUFFER_SIZE = "ysb.buffer_size";
-        String POLLING_TIME = "ysb.polling_time_ms";
-        String NUM_KEYS = "ysb.numKeys";
+        String RUNTIME = "yb.runtime_sec";
+        String BUFFER_SIZE = "yb.buffer_size";
+        String POLLING_TIME = "yb.polling_time_ms";
+        String NUM_KEYS = "yb.numKeys";
     }
 
     interface Component extends BaseComponent {

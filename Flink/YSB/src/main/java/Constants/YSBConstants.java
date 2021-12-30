@@ -6,8 +6,8 @@ public interface YSBConstants extends BaseConstants {
     String DEFAULT_TOPO_NAME = "YSB";
 
     interface Conf {
-        String RUNTIME = "ysb.runtime_sec";
-        String NUM_KEYS = "ysb.numKeys";
+        String RUNTIME = "yb.runtime_sec";
+        String NUM_KEYS = "yb.numKeys";
     }
 
     interface Component extends BaseComponent {

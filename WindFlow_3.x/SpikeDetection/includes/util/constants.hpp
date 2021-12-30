@@ -32,7 +32,7 @@ typedef enum { TEMPERATURE, HUMIDITY, LIGHT, VOLTAGE } monitored_field;
 /// model parameters
 size_t _moving_avg_win_size = 1000;
 monitored_field _field = TEMPERATURE;
-double _threshold = 0.025;
+double _threshold = 0.25; // <-- original value is 0.025
 
 const string _input_file = "../../Datasets/SD/sensors.dat";
 

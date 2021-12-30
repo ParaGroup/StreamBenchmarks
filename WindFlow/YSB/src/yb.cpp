@@ -36,8 +36,9 @@ atomic<long> sent_tuples;                    // total number of events processed
 void aggregateFunctionINC(size_t wid, const joined_event_t &event, result_t &result)
 {
     result.count++;
-    if (event.ts > result.lastUpdate)
+    if (event.ts > result.lastUpdate) {
         result.lastUpdate = event.ts;
+    }
 }
 
 // Main
@@ -138,7 +139,7 @@ int main(int argc, char* argv[]) {
 
     Key_Farm winAggregate = KeyFarm_Builder(aggregateFunctionINC)
             .withTBWindows(seconds(10), seconds(10))
-            .withName("ysb_kf")
+            .withName("yb_kf")
             .withParallelism(winAgg_par_deg)
             .build();
 

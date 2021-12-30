@@ -1,5 +1,5 @@
 #include "call_detail_record.hpp"
-#include <charconv>
+//#include <charconv>
 #include <iomanip>
 #include <sstream>
 
@@ -41,7 +41,7 @@ CallDetailRecord CallDetailRecord::parse(const std::string &string)
 
                 // parse the milliseconds part
                 int millis = 0;
-                std::from_chars(string.data() + string.find('.', start) + 1, last, millis);
+                //std::from_chars(string.data() + string.find('.', start) + 1, last, millis);
 
                 // convert everything to milliseconds
                 std::time_t time = std::mktime(&tm);
@@ -50,7 +50,7 @@ CallDetailRecord CallDetailRecord::parse(const std::string &string)
             }
 
         case 3:
-            std::from_chars(first, last, cdr.call_duration);
+            //std::from_chars(first, last, cdr.call_duration);
             break;
 
         case 4:

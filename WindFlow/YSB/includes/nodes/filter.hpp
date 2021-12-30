@@ -35,10 +35,12 @@ public:
     Filter_Functor(): event_type(0) {}
 
     bool operator()(event_t &event) {
-        if (event.event_type == event_type)
+        if (event.event_type == event_type) {
             return true;
-        else
+        }
+        else {
             return false;
+        }
     }
 };
 
