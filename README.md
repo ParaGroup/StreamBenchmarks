@@ -26,8 +26,8 @@ This repository uses the applications that we have recently added to a larger be
 ```
 @article{DSPBench,
  author={Bordin, Maycon Viana and Griebler, Dalvan and Mencagli, Gabriele and Geyer, Cláudio F. R. and Fernandes, Luiz Gustavo L.},
- journal={IEEE Access}, 
- title={DSPBench: A Suite of Benchmark Applications for Distributed Data Stream Processing Systems}, 
+ journal={IEEE Access},
+ title={DSPBench: A Suite of Benchmark Applications for Distributed Data Stream Processing Systems},
  year={2020},
  volume={8},
  number={},
