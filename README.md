@@ -21,7 +21,7 @@ For WindFlow, benchmarks are available also for the new release 3.x having a sli
 
 The used dataset files are quite large. For some applications, the scripts to generate them have been provided in this repository. For the other applications, send me an email.
 
-# References
+## How to Cite
 This repository uses the applications that we have recently added to a larger benchmark suite of streaming applications called <tt>DSPBench</tt> available on GitHub at the following [link](https://github.com/GMAP/DSPBench). If our applications revealed useful for your research, we kindly ask you to give credit to our effort by citing the following paper:
 ```
 @article{DSPBench,
@@ -36,5 +36,5 @@ This repository uses the applications that we have recently added to a larger be
 }
 ```
 
-# Contributors
-The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:mencagli@di.unipi.it). Other authors of the source code are Alessandra Fais and Andrea Cardaci.
+## Contributors
+The main developer and maintainer of this repository is [Gabriele Mencagli](mailto:gabriele.mencagli@unipi.it). Other authors of the source code are Alessandra Fais and Andrea Cardaci.
