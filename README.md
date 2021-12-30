@@ -19,9 +19,7 @@ The seven applications are available in three different Stream Processing System
 
 For WindFlow, benchmarks are available also for the new release 3.x having a slightly different API than WindFlow version 2.x.
 
-The same applications (except YSB) have also been provided in <strong>BriskStream</strong>, a research SPS for multicores. They can be found [here](https://github.com/Xtra-Computing/briskstream). If you need to test YSB in BriskStream, send an email to me and I will share the source code with you.
-
-Dataset files are quite large. For some applications, the scripts to generate them have been provided in this repository. For the other applications, send me an email.
+The used dataset files are quite large. For some applications, the scripts to generate them have been provided in this repository. For the other applications, send me an email.
 
 # References
 This repository uses the applications that we have recently added to a larger benchmark suite of streaming applications called <tt>DSPBench</tt> available on GitHub at the following [link](https://github.com/GMAP/DSPBench). If our applications revealed useful for your research, we kindly ask you to give credit to our effort by citing the following paper:
