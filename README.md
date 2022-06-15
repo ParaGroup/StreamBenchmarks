@@ -17,7 +17,7 @@ The seven applications are available in three different Stream Processing System
 * <strong>Apache Flink</strong>
 * <strong>WindFlow</strong> ([link](https://github.com/ParaGroup/WindFlow))
 
-For WindFlow, benchmarks are available also for the new release 3.x having a slightly different API than WindFlow version 2.x.
+For WindFlow, benchmarks are available only for versions 3.x of the parallel library.
 
 The used dataset files are quite large. For some applications, the scripts to generate them have been provided in this repository. For the other applications, send me an email.
 

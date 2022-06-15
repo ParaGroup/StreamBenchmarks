@@ -1,12 +1,24 @@
-/**
- * @file    cli_util.hpp
- * @author  Alessandra Fais
- * @date    18/07/2019
- *
- * @brief Util for parsing command line options and printing information on stdout
- *
- * This file contains functions and constants used for parsing command line options
- * and for showing information about the application on stdout.
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli and Alessandra Fais
+ *  
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
  */
 
 #ifndef TRAFFICMONITORING_CLI_UTIL_HPP
@@ -31,6 +43,7 @@ const struct option long_opts[] = {
         {"help", NONE, 0, 'h'},
         {"rate", REQUIRED, 0, 'r'},      // pipe start (source) parallelism degree
         {"sampling", REQUIRED, 0, 's'},   // predictor parallelism degree
+        {"batch", REQUIRED, 0, 'b'},        // pipe end (sink) parallelism degree
         {"parallelism", REQUIRED, 0, 'p'},        // pipe end (sink) parallelism degree
         {"chaining", NONE, 0, 'c'},
         {0, 0, 0, 0}
@@ -128,9 +141,7 @@ inline void print_dataset(const vector<tuple_t>& dataset) {
              << t.longitude << " - "
              << t.speed << " - "
              << t.direction << " - "
-             << t.key << " - "
-             << t.id << " - "
-             << t.ts << endl;
+             << t.key << endl;
 }
 
 // information about input tuple content (testing)
@@ -140,18 +151,14 @@ inline void print_tuple(const string& msg, const tuple_t& t) {
          << t.longitude << " - "
          << t.speed << " - "
          << t.direction << ", "
-         << t.key << " - "
-         << t.id << " - "
-         << t.ts << endl;
+         << t.key << endl;
 }
 
 // information about tuple result content (testing)
 inline void print_result(const string& msg, const result_t& r) {
     cout << msg
          << r.speed << ", "
-         << r.key << " - "
-         << r.id << " - "
-         << r.ts << endl;
+         << r.key << endl;
 }
 
 #endif //TRAFFICMONITORING_CLI_UTIL_HPP

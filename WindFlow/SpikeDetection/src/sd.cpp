@@ -1,18 +1,32 @@
-/** 
- *  @file    sd.cpp
- *  @author  Gabriele Mencagli
- *  @date    13/01/2020
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli and Alessandra Fais
  *  
- *  @brief Main of the SpikeDetection application
- */ 
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
+ */
 
-#include <regex>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <ff/ff.hpp>
-#include <windflow.hpp>
-
+#include<regex>
+#include<string>
+#include<vector>
+#include<iostream>
+#include<ff/ff.hpp>
+#include<windflow.hpp>
 #include "../includes/util/tuple.hpp"
 #include "../includes/nodes/sink.hpp"
 #include "../includes/nodes/source.hpp"
@@ -29,19 +43,14 @@ using namespace wf;
 using record_t = tuple<string, string, int, int, double, double, double, double>;
 
 // global variables
-vector<record_t> parsed_file;               // contains data extracted from the input file
-vector<tuple_t> dataset;                    // contains all the tuples in memory
-unordered_map<size_t, uint64_t> key_occ;    // contains the number of occurrences of each key device_id
-atomic<long> sent_tuples;                   // total number of tuples sent by all the sources
+vector<record_t> parsed_file; // contains data extracted from the input file
+vector<tuple_t> dataset; // contains all the tuples in memory
+unordered_map<size_t, uint64_t> key_occ; // contains the number of occurrences of each key device_id
+atomic<long> sent_tuples; // total number of tuples sent by all the sources
 
-/** 
- *  @brief Parse the input file
- *  
- *  The file is parsed and saved in memory.
- *  
- *  @param file_path the path of the input dataset file
- */ 
-void parse_dataset(const string& file_path) {
+// parse_dataset function
+void parse_dataset(const string &file_path)
+{
     ifstream file(file_path);
     if (file.is_open()) {
         size_t all_records = 0;         // counter of all records (dataset line) read
@@ -86,36 +95,44 @@ void parse_dataset(const string& file_path) {
     }
 }
 
-/** 
- *  @brief Process parsed data and create all the tuples
- *  
- *  The created tuples are maintained in memory. The source node will generate the stream by
- *  reading all the tuples from main memory.
- */ 
-void create_tuples() {
+// create_tuples method
+void create_tuples(int num_keys)
+{
+    std::uniform_int_distribution<std::mt19937::result_type> dist(0, num_keys-1);
+    mt19937 rng;
+    rng.seed(0); // il dataset di default contiene 52 chiavi distinte
     for (int next_tuple_idx = 0; next_tuple_idx < parsed_file.size(); next_tuple_idx++) {
         // create tuple
         auto record = parsed_file.at(next_tuple_idx);
         tuple_t t;
         // select the value of the field the user chose to monitor (parameter set in constants.hpp)
-        if (_field == TEMPERATURE)
+        if (_field == TEMPERATURE) {
             t.property_value = get<TEMP_FIELD>(record);
-        else if (_field == HUMIDITY)
+        }
+        else if (_field == HUMIDITY) {
             t.property_value = get<HUMID_FIELD>(record);
-        else if (_field == LIGHT)
+        }
+        else if (_field == LIGHT) {
             t.property_value = get<LIGHT_FIELD>(record);
-        else if (_field == VOLTAGE)
+        }
+        else if (_field == VOLTAGE) {
             t.property_value = get<VOLT_FIELD>(record);
+        }
         t.incremental_average = 0;
-        t.key = get<DEVICE_ID_FIELD>(record);
-        t.id = (key_occ.find(get<DEVICE_ID_FIELD>(record)))->second++;
-        t.ts = 0L;
+        if (num_keys > 0) {
+            t.key = dist(rng);
+        }
+        else {
+            t.key = get<DEVICE_ID_FIELD>(record);
+        }
+        // t.ts = 0L;
         dataset.insert(dataset.end(), t);
     }
 }
 
 // Main
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     /// parse arguments from command line
     int option = 0;
     int index = 0;
@@ -128,16 +145,26 @@ int main(int argc, char* argv[]) {
     sent_tuples = 0;
     long sampling = 0;
     bool chaining = false;
-    if (argc == 7 || argc == 8) {
-        while ((option = getopt_long(argc, argv, "r:s:p:c:", long_opts, &index)) != -1) {
+    size_t batch_size = 0;
+    int num_keys = 0;
+    if (argc == 11 || argc == 12) {
+        while ((option = getopt_long(argc, argv, "r:k:s:p:b:c:", long_opts, &index)) != -1) {
             file_path = _input_file;
             switch (option) {
                 case 'r': {
                     rate = atoi(optarg);
                     break;
                 }
+                case 'k': {
+                    num_keys = atoi(optarg);
+                    break;
+                }
                 case 's': {
                     sampling = atoi(optarg);
+                    break;
+                }
+                case 'b': {
+                    batch_size = atoi(optarg);
                     break;
                 }
                 case 'p': {
@@ -176,7 +203,7 @@ int main(int argc, char* argv[]) {
         while ((option = getopt_long(argc, argv, "h", long_opts, &index)) != -1) {
             switch (option) {
                 case 'h': {
-                    printf("Parameters: --rate <value> --sampling <value> --parallelism <nSource,nMoving-Average,nSpike-Detector,nSink> [--chaining]\n");
+                    printf("Parameters: --rate <value> --keys <value> --sampling <value> --batch <size> --parallelism <nSource,nMoving-Average,nSpike-Detector,nSink> [--chaining]\n");
                     exit(EXIT_SUCCESS);
                 }
             }
@@ -188,62 +215,85 @@ int main(int argc, char* argv[]) {
     }
     /// data pre-processing
     parse_dataset(file_path);
-    create_tuples();
+    create_tuples(num_keys);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
-
-    /// create the nodes
-    Source_Functor source_functor(dataset, rate, app_start_time);
-    Source source = Source_Builder(source_functor)
-            .withParallelism(source_par_deg)
-            .withName(source_name)
-            .build();
-
-    Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
-    Map average_calculator = Map_Builder(avg_calc_functor)
-            .withParallelism(average_par_deg)
-            .withName(avg_calc_name)
-            .enable_KeyBy()
-            .build();
-
-    Detector_Functor detector_functor(app_start_time);
-    Filter detector = Filter_Builder(detector_functor)
-            .withParallelism(detector_par_deg)
-            .withName(detector_name)
-            .build();
-
-    Sink_Functor sink_functor(sampling, app_start_time);
-    Sink sink = Sink_Builder(sink_functor)
-            .withParallelism(sink_par_deg)
-            .withName(sink_name)
-            .build();
-
     cout << "Executing SpikeDetection with parameters:" << endl;
-    if (rate != 0)
+    if (rate != 0) {
         cout << "  * rate: " << rate << " tuples/second" << endl;
-    else
-        cout << "  * rate: full_speed tupes/second" << endl;
+    }
+    else {
+        cout << "  * rate: full_speed tuples/second" << endl;
+    }
+    cout << "  * batch size: " << batch_size << endl;
     cout << "  * sampling: " << sampling << endl;
     cout << "  * source: " << source_par_deg << endl;
     cout << "  * moving-average: " << average_par_deg << endl;
     cout << "  * spike-detector: " << detector_par_deg << endl;
     cout << "  * sink: " << sink_par_deg << endl;
     cout << "  * topology: source -> moving-average -> spike-detector -> sink" << endl;
-
-    /// create the application
-    PipeGraph topology(topology_name);
-    MultiPipe &mp = topology.add_source(source);
-    if (chaining) {
+    PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
+    if (!chaining) { // no chaining
+        /// create the operators
+        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
+        Source source = Source_Builder(source_functor)
+                .withParallelism(source_par_deg)
+                .withName(source_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
+        Map average_calculator = Map_Builder(avg_calc_functor)
+                .withParallelism(average_par_deg)
+                .withName(avg_calc_name)
+                .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
+                .withOutputBatchSize(batch_size)
+                .build();
+        Detector_Functor detector_functor(app_start_time);
+        Filter detector = Filter_Builder(detector_functor)
+                .withParallelism(detector_par_deg)
+                .withName(detector_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                .withParallelism(sink_par_deg)
+                .withName(sink_name)
+                .build();
+        MultiPipe &mp = topology.add_source(source);
+        cout << "Chaining is disabled" << endl;
+        mp.add(average_calculator);
+        mp.add(detector);
+        mp.add_sink(sink);
+    }
+    else { // chaining
+        /// create the operators
+        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
+        Source source = Source_Builder(source_functor)
+                .withParallelism(source_par_deg)
+                .withName(source_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Average_Calculator_Map_Functor avg_calc_functor(app_start_time);
+        Map average_calculator = Map_Builder(avg_calc_functor)
+                .withParallelism(average_par_deg)
+                .withName(avg_calc_name)
+                .withKeyBy([](const tuple_t &t) -> size_t { return t.key; })
+                .build();
+        Detector_Functor detector_functor(app_start_time);
+        Filter detector = Filter_Builder(detector_functor)
+                .withParallelism(detector_par_deg)
+                .withName(detector_name)
+                .build();
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                .withParallelism(sink_par_deg)
+                .withName(sink_name)
+                .build();
+        MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is enabled" << endl;
         mp.chain(average_calculator);
         mp.chain(detector);
         mp.chain_sink(sink);
-    }
-    else {
-        cout << "Chaining is disabled" << endl;
-        mp.add(average_calculator);
-        mp.add(detector);
-        mp.add_sink(sink);        
     }
     cout << "Executing topology" << endl;
     /// evaluate topology execution time

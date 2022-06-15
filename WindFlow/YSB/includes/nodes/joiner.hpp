@@ -1,10 +1,25 @@
-/** 
- *  @file    joiner.hpp
- *  @author  Gabriele Mencagli
- *  @date    14/08/2019
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli
  *  
- *  @brief Node that joins input events with an in-memory hash table
- */ 
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
+ */
 
 #ifndef YSB_JOINER_HPP
 #define YSB_JOINER_HPP
@@ -48,13 +63,13 @@ public:
             return;
         }
         else {
-            joined_event_t *out = new joined_event_t();
-            out->ts = event.ts;
-            out->ad_id = event.ad_id;
-            campaign_record record = relational_table[(*it).second];
-            out->relational_ad_id = record.ad_id;
-            out->cmp_id = record.cmp_id;
-            shipper.push(out);
+        	campaign_record record = relational_table[(*it).second];
+            joined_event_t out(record.cmp_id, 0);
+            out.ts = event.ts;
+            out.ad_id = event.ad_id;
+            out.relational_ad_id = record.ad_id;
+            out.cmp_id = record.cmp_id;
+            shipper.push(std::move(out));
         }
     }
 };

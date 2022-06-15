@@ -1,24 +1,35 @@
-/**
- * @file    cli_util.hpp
- * @author  Alessandra Fais
- * @date    17/07/2019
- *
- * @brief Util for parsing command line options and printing information on stdout
- *
- * This file contains functions and constants used for parsing command line options
- * and for showing information about the application on stdout.
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli and Alessandra Fais
+ *  
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
  */
 
 #ifndef WORDCOUNT_CLI_UTIL_HPP
 #define WORDCOUNT_CLI_UTIL_HPP
 
-#include <iomanip>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <getopt.h>
+#include<iomanip>
+#include<iostream>
+#include<string>
+#include<vector>
+#include<getopt.h>
 #include "constants.hpp"
-#include "tuple.hpp"
 #include "result.hpp"
 
 using namespace std;
@@ -29,6 +40,7 @@ const struct option long_opts[] = {
         {"help", NONE, 0, 'h'},
         {"rate", REQUIRED, 0, 'r'},      // pipe start (source) parallelism degree
         {"sampling", REQUIRED, 0, 's'},   // predictor parallelism degree
+        {"batch", REQUIRED, 0, 'b'},
         {"parallelism", REQUIRED, 0, 'p'},        // pipe end (sink) parallelism degree
         {"chaining", NONE, 0, 'c'},
         {0, 0, 0, 0}
@@ -48,65 +60,7 @@ const string splitter_str = "* splitter parallelism degree: ";
 const string counter_str = "* counter parallelism degree: ";
 const string sink_str = "* sink parallelism degree: ";
 const string rate_str = "* rate: ";
-
 const string app_error = "Error executing WordCount topology";
 const string app_termination = "Terminated execution of WordCount topology with cardinality ";
-
-inline void print_help(char* arg) {
-    cout << intro << endl
-         << arg
-         << run_mode1 << endl
-         << arg
-         << run_mode2 << endl
-         << arg
-         << run_help << endl;
-}
-
-inline void print_app_descr(string& file, size_t source, size_t splitter, size_t counter, size_t sink, int rate) {
-    cout << app_descr << endl
-         << file_str << file << endl
-         << source_str << source << endl
-         << splitter_str << splitter << endl
-         << counter_str << counter << endl
-         << sink_str << sink << endl
-         << rate_str << rate << endl;
-}
-
-inline void print_summary(double total_MB, long total_words, double elapsed_time_seconds, double tot_average_latency) {
-    cout << "[SUMMARY] generated " << total_MB << " (MB) " << total_words << " (words)" << endl;
-    cout << "[SUMMARY] elapsed time " << elapsed_time_seconds << " (seconds)" << endl;
-    cout << "[SUMMARY] bandwidth "
-         << total_MB / elapsed_time_seconds << " (MB/s) "
-         << total_words / elapsed_time_seconds << " (words/s) " << endl;
-    cout << "[SUMMARY] average latency "
-         << fixed << setprecision(5) << tot_average_latency << " (ms) " <<  endl;
-}
-
-// information about parsed data and dataset (testing)
-inline void print_dataset(const vector<tuple_t>& dataset) {
-    cout << "[main] dataset size: " << dataset.size() << endl;
-    for (auto t : dataset)
-        cout << t.text_line << " - "
-             << t.key << " - "
-             << t.id << " - "
-             << t.ts << endl;
-}
-
-// information about input tuple content (testing)
-inline void print_tuple(const string& msg, const tuple_t& t) {
-    cout << msg
-         << t.text_line << ", "
-         << t.key << " - "
-         << t.id << " - "
-         << t.ts << endl;
-}
-
-// information about result tuple content (testing)
-inline void print_result(const string& msg, const result_t& r) {
-    cout << msg
-         << r.key << " - "
-         << r.id << " - "
-         << r.ts << endl;
-}
 
 #endif //WORDCOUNT_CLI_UTIL_HPP

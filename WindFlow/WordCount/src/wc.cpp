@@ -1,19 +1,32 @@
-/** 
- *  @file    wc.cpp
- *  @author  Gabriele Mencagli
- *  @date    13/01/2020
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli and Alessandra Fais
  *  
- *  @brief Main of the WordCount application
- */ 
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
+ */
 
-#include <regex>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <ff/ff.hpp>
-#include <windflow.hpp>
-
-#include "../includes/util/tuple.hpp"
+#include<regex>
+#include<string>
+#include<vector>
+#include<iostream>
+#include<ff/ff.hpp>
+#include<windflow.hpp>
 #include "../includes/nodes/sink.hpp"
 #include "../includes/util/result.hpp"
 #include "../includes/nodes/source.hpp"
@@ -27,29 +40,21 @@ using namespace ff;
 using namespace wf;
 
 // global variables
-vector<tuple_t> dataset;                    // contains all the input tuples in memory
-atomic<long> total_lines;                   // total number of lines processed by the system
-atomic<long> total_bytes;                   // total number of bytes processed by the system
+vector<string> dataset; // contains all the input tuples in memory
+atomic<long> total_lines; // total number of lines processed by the system
+atomic<long> total_bytes; // total number of bytes processed by the system
 
-/** 
- *  @brief Parse the input file and create all the tuples
- *  
- *  The created tuples are maintained in memory. The source node will generate the stream by
- *  reading all the tuples from main memory.
- *  
- *  @param file_path the path of the input dataset file
- */ 
-void parse_dataset_and_create_tuples(const string& file_path) {
+// parse_dataset_and_create_tuples function
+void parse_dataset_and_create_tuples(const string &file_path)
+{
     ifstream file(file_path);
     if (file.is_open()) {
-        size_t all_records = 0;         // counter of all records (dataset line) read
+        size_t all_records = 0;
         string line;
         while (getline(file, line)) {
-            // process file line
             if (!line.empty()) {
-                tuple_t t(line, all_records, 0, 0);
                 all_records++;
-                dataset.push_back(t);
+                dataset.push_back(line);
             }
         }
         file.close();
@@ -57,7 +62,8 @@ void parse_dataset_and_create_tuples(const string& file_path) {
 }
 
 // Main
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     /// parse arguments from command line
     int option = 0;
     int index = 0;
@@ -71,8 +77,9 @@ int main(int argc, char* argv[]) {
     total_bytes = 0;
     long sampling = 0;
     bool chaining = false;
-    if (argc == 7 || argc == 8) {
-        while ((option = getopt_long(argc, argv, "r:s:p:c:", long_opts, &index)) != -1) {
+    size_t batch_size = 0;
+    if (argc == 9 || argc == 10) {
+        while ((option = getopt_long(argc, argv, "r:s:p:b:c:", long_opts, &index)) != -1) {
             file_path = _input_file;
             switch (option) {
                 case 'r': {
@@ -81,6 +88,10 @@ int main(int argc, char* argv[]) {
                 }
                 case 's': {
                     sampling = atoi(optarg);
+                    break;
+                }
+                case 'b': {
+                    batch_size = atoi(optarg);
                     break;
                 }
                 case 'p': {
@@ -119,7 +130,7 @@ int main(int argc, char* argv[]) {
         while ((option = getopt_long(argc, argv, "h", long_opts, &index)) != -1) {
             switch (option) {
                 case 'h': {
-                    printf("Parameters: --rate <value> --sampling <value> --parallelism <nSource,nSplitter,nCounter,nSink> [--chaining]\n");
+                    printf("Parameters: --rate <value> --sampling <value> --batch <size> --parallelism <nSource,nSplitter,nCounter,nSink> [--chaining]\n");
                     exit(EXIT_SUCCESS);
                 }
             }
@@ -133,59 +144,84 @@ int main(int argc, char* argv[]) {
     parse_dataset_and_create_tuples(file_path);
     /// application starting time
     unsigned long app_start_time = current_time_nsecs();
-
-    /// create the nodes
-    Source_Functor source_functor(dataset, rate, app_start_time);
-    Source source = Source_Builder(source_functor)
-            .withParallelism(source_par_deg)
-            .withName(source_name)
-            .build();
-
-    Splitter_Functor splitter_functor(app_start_time);
-    FlatMap splitter = FlatMap_Builder(splitter_functor)
-            .withParallelism(splitter_par_deg)
-            .withName(splitter_name)
-            .build();
-
-    Counter_Functor counter_functor(app_start_time);
-    Accumulator counter = Accumulator_Builder(counter_functor)
-            .withParallelism(counter_par_deg)
-            .withName(counter_name)
-            .withInitialValue(result_t())
-            .build();
-
-    Sink_Functor sink_functor(sampling, app_start_time);
-    Sink sink = Sink_Builder(sink_functor)
-            .withParallelism(sink_par_deg)
-            .withName(sink_name)
-            .build();
-
     cout << "Executing WordCount with parameters:" << endl;
-    if (rate != 0)
+    if (rate != 0) {
         cout << "  * rate: " << rate << " tuples/second" << endl;
-    else
+    }
+    else {
         cout << "  * rate: full_speed tupes/second" << endl;
+    }
+    cout << "  * batch size: " << batch_size << endl;
     cout << "  * sampling: " << sampling << endl;
     cout << "  * source: " << source_par_deg << endl;
     cout << "  * splitter: " << splitter_par_deg << endl;
     cout << "  * counter: " << counter_par_deg << endl;
     cout << "  * sink: " << sink_par_deg << endl;
     cout << "  * topology: source -> splitter -> counter -> sink" << endl;
-
-    /// create the application
-    PipeGraph topology(topology_name);
-    MultiPipe &mp = topology.add_source(source);
-    if (chaining) {
-        cout << "Chaining is enabled" << endl;
-        mp.chain(splitter);
-        mp.add(counter);
-        mp.chain_sink(sink); 
-    }
-    else {
+    PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::EVENT_TIME);
+    if (!chaining) { // no chaining
+        /// create the operators
+        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
+        Source source = Source_Builder(source_functor)
+                .withParallelism(source_par_deg)
+                .withName(source_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Splitter_Functor splitter_functor(app_start_time);
+        FlatMap splitter = FlatMap_Builder(splitter_functor)
+                .withParallelism(splitter_par_deg)
+                .withName(splitter_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Counter_Functor counter_functor(app_start_time);
+        Reduce counter = Reduce_Builder(counter_functor)
+                .withParallelism(counter_par_deg)
+                .withName(counter_name)
+                .withKeyBy([](const result_t &r) -> std::string { return r.word; })
+                .withInitialState(result_t())
+                .withOutputBatchSize(batch_size)
+                .build();
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                .withParallelism(sink_par_deg)
+                .withName(sink_name)
+                .build();
+        MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is disabled" << endl;
         mp.add(splitter);
         mp.add(counter);
-        mp.add_sink(sink);    
+        mp.add_sink(sink);      
+    }
+    else {
+        /// create the operators
+        Source_Functor source_functor(dataset, rate, app_start_time, batch_size);
+        Source source = Source_Builder(source_functor)
+                .withParallelism(source_par_deg)
+                .withName(source_name)
+                .build();
+        Splitter_Functor splitter_functor(app_start_time);
+        FlatMap splitter = FlatMap_Builder(splitter_functor)
+                .withParallelism(splitter_par_deg)
+                .withName(splitter_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Counter_Functor counter_functor(app_start_time);
+        Reduce counter = Reduce_Builder(counter_functor)
+                .withParallelism(counter_par_deg)
+                .withName(counter_name)
+                .withKeyBy([](const result_t &r) -> std::string { return r.word; })
+                .withInitialState(result_t())
+                .build();
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                .withParallelism(sink_par_deg)
+                .withName(sink_name)
+                .build();
+        MultiPipe &mp = topology.add_source(source);
+        cout << "Chaining is enabled" << endl;
+        mp.chain(splitter);
+        mp.add(counter);
+        mp.chain_sink(sink);        
     }
     cout << "Executing topology" << endl;
     /// evaluate topology execution time

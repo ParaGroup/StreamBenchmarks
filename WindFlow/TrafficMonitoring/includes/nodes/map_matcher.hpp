@@ -1,12 +1,24 @@
-/**
- *  @file    map_matcher.hpp
- *  @author  Alessandra Fais
- *  @date    18/06/2019
- *
- *  @brief Node that implements map matching
- *
- *  Map matching is the problem of how to match recorded geographic coordinates to a logical
- *  model of the real world, typically using some form of Geographic Information System.
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli and Alessandra Fais
+ *  
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
  */
 
 #ifndef TRAFFICMONITORING_MAP_MATCHER_HPP
@@ -101,9 +113,8 @@ public:
                 result_t r;
                 r.speed = t.speed;
                 r.key = road_id;
-                r.id = key_occ.at(road_id)++;
                 r.ts = t.ts;
-                shipper.push(r);
+                shipper.push(std::move(r));
                 emitted++;
 
                 //print_result("[MapMatcher] Result: ", r);

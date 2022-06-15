@@ -1,11 +1,24 @@
-/**
- *  @file    source.hpp
- *  @author  Alessandra Fais
- *  @date    17/06/2019
- *
- *  @brief Source node that generates the input stream
- *
- *  The source node generates the stream by reading the tuples from memory.
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli and Alessandra Fais
+ *  
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
  */
 
 #ifndef TRAFFICMONITORING_SOURCE_HPP
@@ -75,48 +88,33 @@ public:
         dataset = _dataset;
     }
 
-    /**
-     *  @brief Send tuples in a item-by-item fashion
-     *
-     *  @param t reference to the tuple structure
-     *  @return true if the stream is not ended, false if the EOS has been reached
-     */
-    bool operator()(tuple_t& t) {
-        if (rate != 0) {
-            long delay_nsec = (long) ((1.0d / rate) * 1e9);
-            active_delay(delay_nsec);
-        }
-        if (generated_tuples > 0) current_time = current_time_nsecs();
-        if (next_tuple_idx == 0) generations++;         // file generations counter
-        generated_tuples++;                             // tuples counter
-
-        // put a timestamp and send the tuple
-        tuple_t tuple = dataset.at(next_tuple_idx);
-        t.latitude = tuple.latitude;
-        t.longitude = tuple.longitude;
-        t.speed = tuple.speed;
-        t.direction = tuple.direction;
-        t.key = tuple.key;
-        t.id = tuple.id;
-        t.ts = current_time - app_start_time;
-
-        //print_tuple("[Source] tuple content: ", t);
-
-        next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
-
-        // EOS reached
-        if (current_time - app_start_time >= app_run_time) {// && next_tuple_idx == 0) {
-            /*cout << "[Source] execution time: " << (current_time - app_start_time) / 1e09
-                 << " s, generations: " << generations
-                 << ", generated: " << generated_tuples
-                 << ", bandwidth: " << generated_tuples / ((current_time - app_start_time) / 1e09)
-                 << " tuples/s" << endl;*/
-
-            sent_tuples.fetch_add(generated_tuples);
-            return false;
-        }
-        return true;         // stream not ended yet
-    }
+    /** 
+     *  @brief Generation function of the input stream
+     *  
+     *  @param shipper Source_Shipper object used for generating inputs
+     */ 
+	void operator()(Source_Shipper<tuple_t> &shipper)
+	{
+    	current_time = current_time_nsecs(); // get the current time
+    	// generation loop
+    	while (current_time - app_start_time <= app_run_time)
+    	{
+    		if (next_tuple_idx == 0) {
+    			generations++;
+    		}
+    		tuple_t t(dataset.at(next_tuple_idx));
+    		t.ts = current_time_nsecs();
+    		shipper.push(std::move(t)); // send the next tuple
+    		generated_tuples++;
+    		next_tuple_idx = (next_tuple_idx + 1) % dataset.size();   // index of the next tuple to be sent (if any)
+	        if (rate != 0) { // active waiting to respect the generation rate
+	            long delay_nsec = (long) ((1.0d / rate) * 1e9);
+	            active_delay(delay_nsec);
+	        }
+	        current_time = current_time_nsecs(); // get the new current time
+    	}
+    	sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
+	}
 
     ~Source_Functor() {}
 };

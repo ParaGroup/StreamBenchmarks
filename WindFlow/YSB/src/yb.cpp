@@ -1,10 +1,25 @@
-/** 
- *  @file    main.cpp
- *  @author  Gabriele Mencagli
- *  @date    18/07/2019
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli
  *  
- *  @brief Main of the YSB application.
- */ 
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
+ */
 
 #include <regex>
 #include <string>
@@ -33,7 +48,7 @@ using namespace chrono;
 atomic<long> sent_tuples;                    // total number of events processed by the system
 
 // function for computing the final aggregates on tumbling windows (INCremental version)
-void aggregateFunctionINC(size_t wid, const joined_event_t &event, result_t &result)
+void aggregateFunctionINC(const joined_event_t &event, result_t &result, RuntimeContext &rc)
 {
     result.count++;
     if (event.ts > result.lastUpdate) {
@@ -55,8 +70,9 @@ int main(int argc, char* argv[]) {
     sent_tuples = 0;
     long sampling = 0;
     bool chaining = false;
-    if (argc == 7 || argc == 8) {
-        while ((option = getopt_long(argc, argv, "r:s:p:c:", long_opts, &index)) != -1) {
+    size_t batch_size = 0;
+    if (argc == 9 || argc == 10) {
+        while ((option = getopt_long(argc, argv, "r:s:p:b:c:", long_opts, &index)) != -1) {
             switch (option) {
                 case 'r': {
                     rate = atoi(optarg);
@@ -64,6 +80,10 @@ int main(int argc, char* argv[]) {
                 }
                 case 's': {
                     sampling = atoi(optarg);
+                    break;
+                }
+                case 'b': {
+                    batch_size = atoi(optarg);
                     break;
                 }
                 case 'p': {
@@ -103,7 +123,7 @@ int main(int argc, char* argv[]) {
         while ((option = getopt_long(argc, argv, "h", long_opts, &index)) != -1) {
             switch (option) {
                 case 'h': {
-                    printf("Parameters: --rate <value> --sampling <value> --parallelism <nSource,nFilter,nJoiner,nWinAggregate,nSink> [--chaining]\n");
+                    printf("Parameters: --rate <value> --sampling <value> --batch <size> --parallelism <nSource,nFilter,nJoiner,nWinAggregate,nSink> [--chaining]\n");
                     exit(EXIT_SUCCESS);
                 }
             }
@@ -116,44 +136,15 @@ int main(int argc, char* argv[]) {
     // create the campaigns
     CampaignGenerator campaign_gen;
     /// application starting time
-    unsigned long app_start_time = current_time_usecs();
-
-    /// create the nodes
-    Source_Functor source_functor(rate, app_start_time, campaign_gen.getArrays(), campaign_gen.getAdsCompaign());
-    Source source = Source_Builder(source_functor)
-            .withParallelism(source_par_deg)
-            .withName(source_name)
-            .build();
-
-    Filter_Functor filter_functor;
-    Filter filter = Filter_Builder(filter_functor)
-            .withParallelism(filter_par_deg)
-            .withName(filter_name)
-            .build();
-
-    Joiner_Functor joiner_functor(campaign_gen.getHashMap(), campaign_gen.getRelationalTable());
-    FlatMap joiner = FlatMap_Builder(joiner_functor)
-            .withParallelism(joiner_par_deg)
-            .withName(joiner_name)
-            .build();
-
-    Key_Farm winAggregate = KeyFarm_Builder(aggregateFunctionINC)
-            .withTBWindows(seconds(10), seconds(10))
-            .withName("yb_kf")
-            .withParallelism(winAgg_par_deg)
-            .build();
-
-    Sink_Functor sink_functor(sampling, app_start_time);
-    Sink sink = Sink_Builder(sink_functor)
-            .withParallelism(sink_par_deg)
-            .withName(sink_name)
-            .build();
-
+    unsigned long app_start_time = current_time_nsecs();
     cout << "Executing YSB with parameters:" << endl;
-    if (rate != 0)
+    if (rate != 0) {
         cout << "  * rate: " << rate << " tuples/second" << endl;
-    else
+    }
+    else {
         cout << "  * rate: full_speed tupes/second" << endl;
+    }
+    cout << "  * batch size: " << batch_size << endl;
     cout << "  * sampling: " << sampling << endl;
     cout << "  * source: " << source_par_deg << endl;
     cout << "  * filter: " << filter_par_deg << endl;
@@ -161,23 +152,81 @@ int main(int argc, char* argv[]) {
     cout << "  * winAggregate: " << winAgg_par_deg << endl;
     cout << "  * sink: " << sink_par_deg << endl;
     cout << "  * topology: source -> filter -> joiner -> winAggregate -> sink" << endl;
-
-    /// create the application
-    PipeGraph topology(topology_name);
-    MultiPipe &mp = topology.add_source(source);   // in order to exploit chaining, source and splitter must have the same parallelism degree
-    if (chaining) {
-        cout << "Chaining is enabled" << endl;
-        mp.chain(filter);
-        mp.chain(joiner);
-        mp.add(winAggregate);         // in order to exploit chaining, counter and sink must have the same parallelism degree
-        mp.chain_sink(sink);
-    }
-    else {
+    PipeGraph topology(topology_name, Execution_Mode_t::DEFAULT, Time_Policy_t::INGRESS_TIME);
+    if (!chaining) { // no chaining
+        /// create the operators
+        Source_Functor source_functor(rate, app_start_time, campaign_gen.getArrays(), campaign_gen.getAdsCompaign());
+        Source source = Source_Builder(source_functor)
+                .withParallelism(source_par_deg)
+                .withName(source_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Filter_Functor filter_functor;
+        Filter filter = Filter_Builder(filter_functor)
+                .withParallelism(filter_par_deg)
+                .withName(filter_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Joiner_Functor joiner_functor(campaign_gen.getHashMap(), campaign_gen.getRelationalTable());
+        FlatMap joiner = FlatMap_Builder(joiner_functor)
+                .withParallelism(joiner_par_deg)
+                .withName(joiner_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Keyed_Windows winAggregate = Keyed_Windows_Builder(aggregateFunctionINC)
+                .withTBWindows(seconds(10), seconds(10))
+                .withName("yb_kf")
+                .withParallelism(winAgg_par_deg)
+                .withKeyBy([](const joined_event_t &in) -> unsigned long { return in.cmp_id; })
+                .withOutputBatchSize(batch_size)
+                .build();
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                .withParallelism(sink_par_deg)
+                .withName(sink_name)
+                .build();
+        MultiPipe &mp = topology.add_source(source);
         cout << "Chaining is disabled" << endl;
         mp.add(filter);
         mp.add(joiner);
-        mp.add(winAggregate);         // in order to exploit chaining, counter and sink must have the same parallelism degree
+        mp.add(winAggregate);
         mp.add_sink(sink);
+    }
+    else { // chaining
+        /// create the operators
+        Source_Functor source_functor(rate, app_start_time, campaign_gen.getArrays(), campaign_gen.getAdsCompaign());
+        Source source = Source_Builder(source_functor)
+                .withParallelism(source_par_deg)
+                .withName(source_name)
+                .build();
+        Filter_Functor filter_functor;
+        Filter filter = Filter_Builder(filter_functor)
+                .withParallelism(filter_par_deg)
+                .withName(filter_name)
+                .build();
+        Joiner_Functor joiner_functor(campaign_gen.getHashMap(), campaign_gen.getRelationalTable());
+        FlatMap joiner = FlatMap_Builder(joiner_functor)
+                .withParallelism(joiner_par_deg)
+                .withName(joiner_name)
+                .withOutputBatchSize(batch_size)
+                .build();
+        Keyed_Windows winAggregate = Keyed_Windows_Builder(aggregateFunctionINC)
+                .withTBWindows(seconds(10), seconds(10))
+                .withName("yb_kf")
+                .withParallelism(winAgg_par_deg)
+                .withKeyBy([](const joined_event_t &in) -> unsigned long { return in.cmp_id; })
+                .build();
+        Sink_Functor sink_functor(sampling, app_start_time);
+        Sink sink = Sink_Builder(sink_functor)
+                .withParallelism(sink_par_deg)
+                .withName(sink_name)
+                .build();
+        MultiPipe &mp = topology.add_source(source);
+        cout << "Chaining is enabled" << endl;
+        mp.chain(filter);
+        mp.chain(joiner);
+        mp.add(winAggregate);
+        mp.chain_sink(sink);
     }
     cout << "Executing topology" << endl;
     /// evaluate topology execution time

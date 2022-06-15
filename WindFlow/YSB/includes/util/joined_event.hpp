@@ -1,14 +1,24 @@
-/** 
- *  @file    joined_event.hpp
- *  @author  Gabriele Mencagli
- *  @date    14/08/2019
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli
  *  
- *  @brief Structure of a joined tuple
+ *  This file is part of StreamBenchmarks.
  *  
- *  This file defines the structure of the tuples emitted by the joiner operator.
- *  The data type joined_event_t must be default constructible, with a copy constructor
- *  and copy assignment operator, and it must provide and implement the setInfo() and
- *  getInfo() methods.
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
  */
 
 #ifndef YSB_JOINED_EVENT_HPP
@@ -21,28 +31,22 @@ using namespace std;
 // joined_event_t struct
 struct joined_event_t
 {
-    unsigned long ts; // timestamp
     unsigned long ad_id; // advertisement id
     unsigned long relational_ad_id;
     unsigned long cmp_id; // campaign id
+    uint64_t ts;
 
-    // constructor
-    joined_event_t() {}
+    // Constructor I
+	joined_event_t():
+				   ad_id(0),
+				   relational_ad_id(0),
+				   cmp_id(0),
+				   ts(0) {}
 
-    // destructor
-    ~joined_event_t() {}
-
-    // getControlFields method (needed by the WindFlow library)
-    tuple<size_t, uint64_t, uint64_t> getControlFields() const
+    // Constructor II
+    joined_event_t(unsigned long _cmp_id, uint64_t _id)
     {
-        return tuple<size_t, uint64_t, uint64_t>((size_t) cmp_id, (uint64_t) 0, (uint64_t) ts); // be careful with this cast!
-    }
-
-    // setControlFields method (needed by the WindFlow library)
-    void setControlFields(size_t _key, uint64_t _id, uint64_t _ts)
-    {
-        cmp_id = (long) _key;
-        ts = (long) _ts;
+    	cmp_id = _cmp_id;
     }
 };
 

@@ -1,10 +1,25 @@
-/** 
- *  @file    sink.hpp
- *  @author  Gabriele Mencagli
- *  @date    14/08/2019
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli
  *  
- *  @brief Sink node that receives and prints the results
- */ 
+ *  This file is part of StreamBenchmarks.
+ *  
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
+ */
 
 #ifndef YSB_SINK_HPP
 #define YSB_SINK_HPP
@@ -62,10 +77,10 @@ public:
                 parallelism = rc.getParallelism();
                 replica_id = rc.getReplicaIndex();
             }
-            //print_result("[Sink] Received tuple: ", *t);
+            //cout << "Sink riceve risultato chiave " << (*r).cmp_id << endl;
 
             // always evaluate latency when compiling with FF_BOUNDED_BUFFER MACRO set
-            unsigned long tuple_latency = current_time_usecs() - (app_start_time + (*r).lastUpdate);    // latency (usecs)
+            unsigned long tuple_latency = (current_time_nsecs() - (*r).lastUpdate) / 1e03;
             processed++;        // tuples counter
             current_time = current_time_usecs();
             latency_sampler.add(tuple_latency, current_time);

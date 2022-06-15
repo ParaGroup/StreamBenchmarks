@@ -1,11 +1,24 @@
-/** 
- *  @file    source.hpp
- *  @author  Gabriele Mencagli
- *  @date    14/08/2019
+/**************************************************************************************
+ *  Copyright (c) 2019- Gabriele Mencagli
  *  
- *  @brief Source node that generates the input stream
+ *  This file is part of StreamBenchmarks.
  *  
- *  The source node generates the stream by reading the tuples from memory.
+ *  StreamBenchmarks is free software dual licensed under the GNU LGPL or MIT License.
+ *  You can redistribute it and/or modify it under the terms of the
+ *    * GNU Lesser General Public License as published by
+ *      the Free Software Foundation, either version 3 of the License, or
+ *      (at your option) any later version
+ *    OR
+ *    * MIT License: https://github.com/ParaGroup/StreamBenchmarks/blob/master/LICENSE.MIT
+ *  
+ *  StreamBenchmarks is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *  You should have received a copy of the GNU Lesser General Public License and
+ *  the MIT License along with WindFlow. If not, see <http://www.gnu.org/licenses/>
+ *  and <http://opensource.org/licenses/MIT/>.
+ **************************************************************************************
  */
 
 #ifndef YSB_SOURCE_HPP
@@ -67,36 +80,35 @@ public:
             value(0) {}
 
     /** 
-     *  @brief Send tuples in a item-by-item fashion
+     *  @brief Generation function of the input stream
      *  
-     *  @param t reference to the event structure
-     *  @return true if the stream is not ended, false if the EOS has been reached
+     *  @param shipper Source_Shipper object used for generating inputs
      */ 
-    bool operator()(event_t &event) {
-        if (rate != 0) {
-            long delay_usec = (long) ((1.0d / rate) * 1e06);
-            active_delay(delay_usec);
-        }
-        current_time = current_time_usecs();
-        // fill the event's fields
-        event.ts = current_time_usecs() - app_start_time;
-        event.user_id = 0; // not meaningful
-        event.page_id = 0; // not meaningful
-        event.ad_id = ads_arrays[(value % 100000) % (N_CAMPAIGNS * adsPerCampaign)][1];
-        event.ad_type = (value % 100000) % 5;
-        event.event_type = (value % 100000) % 3;
-        event.ip = 1; // not meaningful
-        value++;
-        generated_tuples++;
-        double elapsed_time = (current_time - app_start_time);
-        if (elapsed_time >= app_run_time) {
-            sent_tuples.fetch_add(generated_tuples);
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
+	void operator()(Source_Shipper<event_t> &shipper)
+	{
+    	current_time = current_time_nsecs(); // get the current time
+    	// generation loop
+    	while (current_time - app_start_time <= app_run_time)
+    	{
+    		event_t event;
+	        event.user_id = 0; // not meaningful
+	        event.page_id = 0; // not meaningful
+	        event.ad_id = ads_arrays[(value % 100000) % (N_CAMPAIGNS * adsPerCampaign)][1];
+	        event.ad_type = (value % 100000) % 5;
+	        event.event_type = (value % 100000) % 3;
+	        event.ip = 1; // not meaningful    		
+	        value++;
+	        generated_tuples++;
+	       	event.ts = current_time_nsecs();
+    		shipper.push(std::move(event)); // send the next tuple
+	        if (rate != 0) { // active waiting to respect the generation rate
+	            long delay_nsec = (long) ((1.0d / rate) * 1e9);
+	            active_delay(delay_nsec);
+	        }
+	        current_time = current_time_nsecs(); // get the new current time
+    	}
+    	sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
+	}
 
     ~Source_Functor() {}
 };
