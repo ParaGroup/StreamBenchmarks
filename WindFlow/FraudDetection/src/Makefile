@@ -1,5 +1,5 @@
 # Author: Gabriele Mencagli
-# Date: 13/01/2020
+# Date: 11/01/2020
 
 FF_ROOT         = $(HOME)/fastflow
 WF_INCLUDES     = $(HOME)/WindFlow/wf
@@ -13,7 +13,7 @@ MACRO           = -DFF_BOUNDED_BUFFER -DDEFAULT_BUFFER_CAPACITY=32786 -DNDEBUG
 OPTFLAGS        = -g -O3 -finline-functions
 LDFLAGS         = -pthread
 
-all: wc
+all: fd
 
 metric.o: ../includes/util/metric.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
@@ -24,14 +24,14 @@ metric_group.o: ../includes/util/metric_group.cpp
 sampler.o: ../includes/util/sampler.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-wc.o: wc.cpp
+fd.o: fd.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-wc: metric.o metric_group.o sampler.o wc.o
-	$(CXX) metric.o metric_group.o sampler.o wc.o -o ../bin/wc $(LDFLAGS)
+fd: metric.o metric_group.o sampler.o fd.o
+	$(CXX) metric.o metric_group.o sampler.o fd.o -o ../bin/fd $(LDFLAGS)
 
 clean:
-	rm -f $(OUT_DIR)/wc
+	rm -f $(OUT_DIR)/fd
 	rm -f *.o
 
 .DEFAULT_GOAL := all

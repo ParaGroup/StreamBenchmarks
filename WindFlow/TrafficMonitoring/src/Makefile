@@ -4,16 +4,17 @@
 FF_ROOT			= $(HOME)/fastflow
 WF_INCLUDES		= $(HOME)/WindFlow/wf
 INCLUDE_DIR		= ../includes
+GDAL_INCLUDE    = /usr/local/include
 OUT_DIR			= ../bin
 
 CXX 			= g++
 CXXFLAGS		= -std=c++17
-INCLUDES		= -I $(FF_ROOT) -I $(WF_INCLUDES) -I $(INCLUDE_DIR)
-MACRO           = -DFF_BOUNDED_BUFFER -DDEFAULT_BUFFER_CAPACITY=32786 -DNDEBUG -DN_CAMPAIGNS=100
+INCLUDES		= -I $(FF_ROOT) -I $(WF_INCLUDES) -I $(INCLUDE_DIR) -I $(GDAL_INCLUDE)
+MACRO           = -DFF_BOUNDED_BUFFER -DNDEBUG
 OPTFLAGS		= -g -O3 -finline-functions
-LDFLAGS			= -pthread
+LDFLAGS			= -pthread -lgdal
 
-all: yb
+all: tm
 
 metric.o: ../includes/util/metric.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
@@ -24,14 +25,14 @@ metric_group.o: ../includes/util/metric_group.cpp
 sampler.o: ../includes/util/sampler.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-yb.o: yb.cpp
+tm.o: tm.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-yb: metric.o metric_group.o sampler.o yb.o
-	$(CXX) metric.o metric_group.o sampler.o yb.o -o ../bin/yb $(LDFLAGS)
+tm: metric.o metric_group.o sampler.o tm.o
+	$(CXX) metric.o metric_group.o sampler.o tm.o -o ../bin/tm $(LDFLAGS)
 
 clean:
-	rm -f $(OUT_DIR)/yb
+	rm -f $(OUT_DIR)/tm
 	rm -f *.o
 
 .DEFAULT_GOAL := all
