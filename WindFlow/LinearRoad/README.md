@@ -2,6 +2,7 @@
 
 ## Dependencies
 apt install libssl-dev
+apt install rapidjson-dev
 
 ## Run
 

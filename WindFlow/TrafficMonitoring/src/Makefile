@@ -2,7 +2,7 @@
 # Date: 13/01/2020
 
 FF_ROOT			= $(HOME)/fastflow
-WF_INCLUDES		= $(HOME)/WindFlow/wf
+WF_INCLUDES		= $(HOME)/WindFlow-3.4.0/wf
 INCLUDE_DIR		= ../includes
 GDAL_INCLUDE    = /usr/local/include
 OUT_DIR			= ../bin
@@ -29,7 +29,7 @@ tm.o: tm.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
 tm: metric.o metric_group.o sampler.o tm.o
-	$(CXX) metric.o metric_group.o sampler.o tm.o -o ../bin/tm $(LDFLAGS)
+	$(CXX) metric.o metric_group.o sampler.o tm.o -o $(OUT_DIR)/tm $(LDFLAGS)
 
 clean:
 	rm -f $(OUT_DIR)/tm

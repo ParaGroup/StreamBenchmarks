@@ -63,7 +63,7 @@ public:
             return;
         }
         else {
-        	campaign_record record = relational_table[(*it).second];
+            campaign_record record = relational_table[(*it).second];
             joined_event_t out(record.cmp_id, 0);
             out.ts = event.ts;
             out.ad_id = event.ad_id;

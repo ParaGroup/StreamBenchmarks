@@ -37,16 +37,16 @@ struct joined_event_t
     uint64_t ts;
 
     // Constructor I
-	joined_event_t():
-				   ad_id(0),
-				   relational_ad_id(0),
-				   cmp_id(0),
-				   ts(0) {}
+    joined_event_t():
+                   ad_id(0),
+                   relational_ad_id(0),
+                   cmp_id(0),
+                   ts(0) {}
 
     // Constructor II
     joined_event_t(unsigned long _cmp_id, uint64_t _id)
     {
-    	cmp_id = _cmp_id;
+        cmp_id = _cmp_id;
     }
 };
 

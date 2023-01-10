@@ -84,31 +84,31 @@ public:
      *  
      *  @param shipper Source_Shipper object used for generating inputs
      */ 
-	void operator()(Source_Shipper<event_t> &shipper)
-	{
-    	current_time = current_time_nsecs(); // get the current time
-    	// generation loop
-    	while (current_time - app_start_time <= app_run_time)
-    	{
-    		event_t event;
-	        event.user_id = 0; // not meaningful
-	        event.page_id = 0; // not meaningful
-	        event.ad_id = ads_arrays[(value % 100000) % (N_CAMPAIGNS * adsPerCampaign)][1];
-	        event.ad_type = (value % 100000) % 5;
-	        event.event_type = (value % 100000) % 3;
-	        event.ip = 1; // not meaningful    		
-	        value++;
-	        generated_tuples++;
-	       	event.ts = current_time_nsecs();
-    		shipper.push(std::move(event)); // send the next tuple
-	        if (rate != 0) { // active waiting to respect the generation rate
-	            long delay_nsec = (long) ((1.0d / rate) * 1e9);
-	            active_delay(delay_nsec);
-	        }
-	        current_time = current_time_nsecs(); // get the new current time
-    	}
-    	sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
-	}
+    void operator()(Source_Shipper<event_t> &shipper)
+    {
+        current_time = current_time_nsecs(); // get the current time
+        // generation loop
+        while (current_time - app_start_time <= app_run_time)
+        {
+            event_t event;
+            event.user_id = 0; // not meaningful
+            event.page_id = 0; // not meaningful
+            event.ad_id = ads_arrays[(value % 100000) % (N_CAMPAIGNS * adsPerCampaign)][1];
+            event.ad_type = (value % 100000) % 5;
+            event.event_type = (value % 100000) % 3;
+            event.ip = 1; // not meaningful         
+            value++;
+            generated_tuples++;
+            event.ts = current_time_nsecs();
+            shipper.push(std::move(event)); // send the next tuple
+            if (rate != 0) { // active waiting to respect the generation rate
+                long delay_nsec = (long) ((1.0d / rate) * 1e9);
+                active_delay(delay_nsec);
+            }
+            current_time = current_time_nsecs(); // get the new current time
+        }
+        sent_tuples.fetch_add(generated_tuples); // save the number of generated tuples
+    }
 
     ~Source_Functor() {}
 };

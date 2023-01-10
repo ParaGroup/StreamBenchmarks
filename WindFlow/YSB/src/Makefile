@@ -2,7 +2,7 @@
 # Date: 13/01/2020
 
 FF_ROOT			= $(HOME)/fastflow
-WF_INCLUDES		= $(HOME)/WindFlow/wf
+WF_INCLUDES		= $(HOME)/WindFlow-3.4.0/wf
 INCLUDE_DIR		= ../includes
 OUT_DIR			= ../bin
 
@@ -13,7 +13,7 @@ MACRO           = -DFF_BOUNDED_BUFFER -DDEFAULT_BUFFER_CAPACITY=32786 -DNDEBUG -
 OPTFLAGS		= -g -O3 -finline-functions
 LDFLAGS			= -pthread
 
-all: yb
+all: ysb
 
 metric.o: ../includes/util/metric.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
@@ -24,14 +24,14 @@ metric_group.o: ../includes/util/metric_group.cpp
 sampler.o: ../includes/util/sampler.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-yb.o: yb.cpp
+ysb.o: ysb.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
-yb: metric.o metric_group.o sampler.o yb.o
-	$(CXX) metric.o metric_group.o sampler.o yb.o -o ../bin/yb $(LDFLAGS)
+ysb: metric.o metric_group.o sampler.o ysb.o
+	$(CXX) metric.o metric_group.o sampler.o ysb.o -o $(OUT_DIR)/ysb $(LDFLAGS)
 
 clean:
-	rm -f $(OUT_DIR)/yb
+	rm -f $(OUT_DIR)/ysb
 	rm -f *.o
 
 .DEFAULT_GOAL := all

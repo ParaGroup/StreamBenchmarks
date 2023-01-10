@@ -1,4 +1,5 @@
 # Compile and run TrafficMonitoring
+Please install the gdal library in the gdal folder.
 
 ## Compile
 make all

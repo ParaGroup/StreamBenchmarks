@@ -2,7 +2,7 @@
 # Date: 13/01/2020
 
 FF_ROOT         = $(HOME)/fastflow
-WF_INCLUDES     = $(HOME)/WindFlow/wf
+WF_INCLUDES     = $(HOME)/WindFlow-3.4.0/wf
 INCLUDE_DIR     = ../includes
 OUT_DIR         = ../bin
 
@@ -28,7 +28,7 @@ sd.o: sd.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(MACRO) $(OPTFLAGS) $< -c
 
 sd: metric.o metric_group.o sampler.o sd.o
-	$(CXX) metric.o metric_group.o sampler.o sd.o -o ../bin/sd $(LDFLAGS)
+	$(CXX) metric.o metric_group.o sampler.o sd.o -o $(OUT_DIR)/sd $(LDFLAGS)
 
 clean:
 	rm -f $(OUT_DIR)/sd

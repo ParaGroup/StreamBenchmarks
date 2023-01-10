@@ -38,18 +38,18 @@ struct result_t
 
     // Constructor I
     result_t():
-    		 wid(0),
-    		 cmp_id(0),
-    		 lastUpdate(0),
-    		 count(0) {}
+             wid(0),
+             cmp_id(0),
+             lastUpdate(0),
+             count(0) {}
 
     // Constructor II
     result_t(unsigned long _cmp_id,
-    		 uint64_t _wid):
-    		 lastUpdate(0),
-    		 count(0),
-    		 cmp_id(_cmp_id),
-    		 wid(_wid) {}
+             uint64_t _wid):
+             lastUpdate(0),
+             count(0),
+             cmp_id(_cmp_id),
+             wid(_wid) {}
 };
 
 #endif //YSB_RESULT_HPP
