@@ -4,7 +4,7 @@
 
 # StreamBenchmarks
 
-This repository contains a set of stream processing applications taken from the literature, and from existing repositories (e.g., [here](https://github.com/GMAP/DSPBench)), which have been cleaned up properly. AThe applications can be run in a homogeneous manner and their execution collects statistics of throughput and latency in different ways.
+This repository contains a set of stream processing applications taken from the literature, and from existing repositories (e.g., [here](https://github.com/GMAP/DSPBench)), which have been cleaned up properly. The applications can be run in a homogeneous manner and their execution collects statistics of throughput and latency in different ways.
 
 Below we list the applications with the availability in different Stream Processing Engines and Libraries. We consider Apache Storm, Apache Flink and WindFlow ([link](https://github.com/ParaGroup/WindFlow)):
 
