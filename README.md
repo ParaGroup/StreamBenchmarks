@@ -4,7 +4,7 @@
 
 # StreamBenchmarks
 
-This repository contains a set of stream processing applications taken from the literature, and from existing repositories (e.g., [here](https://github.com/GMAP/DSPBench)), which have been cleaned up properly. AThe applications can be run in a homogeneous manner and their execution collects statistics of throughput and latency in different ways.
+This repository contains a set of stream processing applications taken from the literature, and from existing repositories (e.g., [here](https://github.com/GMAP/DSPBench)), which have been cleaned up properly. The applications can be run in a homogeneous manner and their execution collects statistics of throughput and latency in different ways.
 
 Below we list the applications with the availability in different Stream Processing Engines and Libraries. We consider Apache Storm, Apache Flink and WindFlow ([link](https://github.com/ParaGroup/WindFlow)):
 
@@ -21,7 +21,7 @@ Below we list the applications with the availability in different Stream Process
 |    MachineOutlier    |    MO   |      No      |      No      |    Yes   |
 | ReinforcementLearner |    RL   |      No      |      No      |    Yes   |
 
-This repository also contains small datasets used to run the applications except for LinearRoad and VoipStream. For these two applications, datasets can be generated as described in [1](path%20with%20spaces/other_file.md) and [2](path%20with%20spaces/other_file.md). Once generated, please copy the dataset files in the <strong>Datasets/LR</strong> and <strong>Datasets/VS</strong> folders respectively. The datasets are used by all versions of the same application in all the supported frameworks.
+This repository also contains small datasets used to run the applications except for LinearRoad and VoipStream. For these two applications, datasets can be generated as described in [1](Storm/LinearRoad/README.md) and [2](Storm/VoipStream/README.md). Once generated, please copy the dataset files in the <code>Datasets/LR</code> and <code>Datasets/VS</code> folders respectively. The datasets are used by all versions of the same application in all the supported frameworks.
 
 This repository is not totally cleaned and there is a certain duplication of code. The reason is because each application, for each framework, is designed to be a separated standalone project. Refer to the README file within each subfolder (application/framework) for further information about how to run each application and for the required dependencies.
 
