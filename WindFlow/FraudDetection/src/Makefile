@@ -2,7 +2,7 @@
 # Date: 11/01/2020
 
 FF_ROOT         = $(HOME)/fastflow
-WF_INCLUDES     = $(HOME)/WindFlow-3.4.0/wf
+WF_INCLUDES		= $(HOME)/WindFlow-4.0.0/wf
 INCLUDE_DIR     = ../includes
 OUT_DIR         = ../bin
 
