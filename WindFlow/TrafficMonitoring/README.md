@@ -1,6 +1,9 @@
 # Compile and run TrafficMonitoring
 Please install the gdal library in the gdal folder.
 
+## Dependencies
+Compile the sources of GDAL: in the gdal-2.4.0 folder run the sequence of commands ./configure; make; sudo make install
+
 ## Compile
 make all
 

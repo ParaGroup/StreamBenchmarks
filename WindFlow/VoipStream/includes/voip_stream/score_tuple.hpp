@@ -26,6 +26,7 @@
 #include<voip_stream/call_detail_record.hpp>
 #include<string>
 #include<tuple>
+#include<cstdint>
 
 namespace voip_stream {
 

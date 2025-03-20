@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include<iostream>
 #include<linear_road/toll_notification.hpp>
 #include<util/simple_tuple.hpp>
 

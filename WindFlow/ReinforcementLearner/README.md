@@ -3,6 +3,7 @@ Please install the stduuid library in the stduuid folder.
 
 ## Dependencies
 apt install libmaxminddb-dev
+apt-get install uuid-dev
 
 ## Run
 

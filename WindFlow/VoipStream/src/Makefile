@@ -2,7 +2,7 @@
 # Date: 03/01/2023
 
 FF_ROOT         = $(HOME)/fastflow
-WF_INCLUDES		= $(HOME)/WindFlow-4.0.0/wf
+WF_INCLUDES		= $(HOME)/WindFlow-4.2.2/wf
 INCLUDE_DIR     = ../includes
 OUT_DIR         = ../bin
 SRCS            = $(wildcard *.cpp)

@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include<iostream>
 #include<util/simple_tuple.hpp>
 
 namespace linear_road {
